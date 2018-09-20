@@ -165,7 +165,7 @@ extension CSVWriter {
         isFirstField = true
     }
 
-    public func write(field value: String, quoted: Bool = false) throws {
+    public func write(field value: String) throws {
         if isFirstRow {
             isFirstRow = false
         } else {
@@ -180,29 +180,13 @@ extension CSVWriter {
             try configuration.delimiter.unicodeScalars.forEach(writeScalar)
         }
 
-        var value = value
-
-        var quoted = quoted
-        if value.contains("\"") {
-            quoted = true
-        }
-
-        if quoted {
-            value = value.replacingOccurrences(of: DQUOTE_STR, with: DQUOTE2_STR)
-            try writeScalar(DQUOTE)
-        }
-
         try value.unicodeScalars.forEach(writeScalar)
-
-        if quoted {
-            try writeScalar(DQUOTE)
-        }
     }
 
-    public func write(row values: [String], quotedAtIndex: ((Int) -> Bool) = { _ in false }) throws {
+    public func write(row values: [String]) throws {
         beginNewRow()
-        for (i, value) in values.enumerated() {
-            try write(field: value, quoted: quotedAtIndex(i))
+        for value in values {
+            try write(field: value)
         }
     }
 
